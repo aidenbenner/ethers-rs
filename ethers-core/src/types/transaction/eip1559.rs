@@ -3,6 +3,7 @@ use crate::{
     types::{Address, Bytes, NameOrAddress, Signature, H256, U256, U64},
     utils::keccak256,
 };
+use ethabi::ethereum_types::BigEndianHash;
 use rlp::RlpStream;
 
 /// EIP-1559 transactions have 9 fields
@@ -149,9 +150,10 @@ impl Eip1559TransactionRequest {
 
         // append the signature
         let v = normalize_v(signature.v, chain_id);
+
         rlp.append(&v);
-        rlp.append(&signature.r);
-        rlp.append(&signature.s);
+        rlp.append(&signature.r.into_uint());
+        rlp.append(&signature.s.into_uint());
         rlp.finalize_unbounded_list();
         rlp.out().freeze().into()
     }

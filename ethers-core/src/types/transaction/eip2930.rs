@@ -1,6 +1,7 @@
 use super::{normalize_v, request::TransactionRequest};
 use crate::types::{Address, Bytes, Signature, H256, U256, U64};
 
+use ethabi::ethereum_types::BigEndianHash;
 use rlp::RlpStream;
 use rlp_derive::{RlpEncodable, RlpEncodableWrapper};
 use serde::{Deserialize, Serialize};
@@ -85,8 +86,8 @@ impl Eip2930TransactionRequest {
         // append the signature
         let v = normalize_v(signature.v, chain_id);
         rlp.append(&v);
-        rlp.append(&signature.r);
-        rlp.append(&signature.s);
+        rlp.append(&signature.r.into_uint());
+        rlp.append(&signature.s.into_uint());
         rlp.out().freeze().into()
     }
 }

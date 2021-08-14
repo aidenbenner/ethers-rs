@@ -5,6 +5,7 @@ use crate::{
     utils::keccak256,
 };
 
+use ethabi::ethereum_types::BigEndianHash;
 use rlp::RlpStream;
 use serde::{Deserialize, Serialize};
 
@@ -147,8 +148,8 @@ impl TransactionRequest {
 
         // append the signature
         rlp.append(&signature.v);
-        rlp.append(&signature.r);
-        rlp.append(&signature.s);
+        rlp.append(&signature.r.into_uint());
+        rlp.append(&signature.s.into_uint());
         rlp.out().freeze().into()
     }
 
