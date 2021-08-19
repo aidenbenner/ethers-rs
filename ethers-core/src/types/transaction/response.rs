@@ -43,6 +43,7 @@ pub struct Transaction {
 
     /// Gas Price, null for Type 2 transactions
     #[serde(rename = "gasPrice")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub gas_price: Option<U256>,
 
     /// Gas amount

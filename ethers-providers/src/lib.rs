@@ -377,6 +377,16 @@ pub trait Middleware: Sync + Send + Debug {
             .map_err(FromErr::from)
     }
 
+    async fn get_raw_transaction<T: Send + Sync + Into<TxHash>>(
+        &self,
+        transaction_hash: T,
+    ) -> Result<Option<Bytes>, Self::Error> {
+        self.inner()
+            .get_raw_transaction(transaction_hash)
+            .await
+            .map_err(FromErr::from)
+    }
+
     async fn get_transaction_receipt<T: Send + Sync + Into<TxHash>>(
         &self,
         transaction_hash: T,
