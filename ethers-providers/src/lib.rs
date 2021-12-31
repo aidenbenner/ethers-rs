@@ -199,6 +199,13 @@ pub trait Middleware: Sync + Send + Debug {
         self.inner().send_transaction(tx, block).await.map_err(FromErr::from)
     }
 
+    async fn get_raw_transaction<T: Send + Sync + Into<TxHash>>(
+        &self,
+        transaction_hash: T,
+    ) -> Result<Option<Bytes>, Self::Error> {
+        self.inner().get_raw_transaction(transaction_hash).await.map_err(FromErr::from)
+    }
+
     /// Send a transaction with a simple escalation policy.
     ///
     /// `policy` should be a boxed function that maps `original_gas_price`
