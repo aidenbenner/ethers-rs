@@ -489,7 +489,7 @@ pub trait Middleware: Sync + Send + Debug {
         req: T,
         block: Option<BlockNumber>,
         trace: GethTracer,
-    ) -> Result<BlockTrace, Self::Error> {
+    ) -> Result<JsonValue, Self::Error> {
         self.inner().geth_debug_trace(req, block, trace).await.map_err(FromErr::from)
     }
 

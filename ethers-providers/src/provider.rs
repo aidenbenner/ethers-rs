@@ -788,7 +788,7 @@ impl<P: JsonRpcClient> Middleware for Provider<P> {
         req: T,
         block: Option<BlockNumber>,
         trace: GethTracer,
-    ) -> Result<BlockTrace, ProviderError> {
+    ) -> Result<JsonValue, ProviderError> {
         let req = req.into();
         let req = utils::serialize(&req);
         let block = utils::serialize(&block.unwrap_or(BlockNumber::Latest));
