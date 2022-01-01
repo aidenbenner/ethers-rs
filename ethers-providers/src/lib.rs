@@ -67,6 +67,14 @@ pub trait FromErr<T> {
     fn from(src: T) -> Self;
 }
 
+#[derive(Serialize, Debug)]
+pub struct GethTracer {
+    pub disable_storage: bool,
+    pub disable_memory: bool,
+    pub disable_stack: bool,
+    pub tracer: String,
+}
+
 /// Calls the future if `item` is None, otherwise returns a `futures::ok`
 pub async fn maybe<F, T, E>(item: Option<T>, f: F) -> Result<T, E>
 where
@@ -473,6 +481,16 @@ pub trait Middleware: Sync + Send + Debug {
 
     async fn txpool_status(&self) -> Result<TxpoolStatus, Self::Error> {
         self.inner().txpool_status().await.map_err(FromErr::from)
+    }
+
+    /// Executes the given call and returns a number of possible traces for it
+    async fn geth_debug_trace<T: Into<TypedTransaction> + Send + Sync>(
+        &self,
+        req: T,
+        block: Option<BlockNumber>,
+        trace: GethTracer,
+    ) -> Result<BlockTrace, Self::Error> {
+        self.inner().geth_debug_trace(req, block, trace).await.map_err(FromErr::from)
     }
 
     // Parity `trace` support

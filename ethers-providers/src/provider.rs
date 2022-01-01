@@ -2,7 +2,7 @@ use crate::{
     ens, maybe,
     pubsub::{PubsubClient, SubscriptionStream},
     stream::{FilterWatcher, DEFAULT_POLL_INTERVAL},
-    FromErr, Http as HttpProvider, JsonRpcClient, JsonRpcClientWrapper, MockProvider,
+    FromErr, GethTracer, Http as HttpProvider, JsonRpcClient, JsonRpcClientWrapper, MockProvider,
     PendingTransaction, QuorumProvider,
 };
 
@@ -781,6 +781,19 @@ impl<P: JsonRpcClient> Middleware for Provider<P> {
     /// Ref: [Here](https://geth.ethereum.org/docs/rpc/ns-txpool#txpool_status)
     async fn txpool_status(&self) -> Result<TxpoolStatus, ProviderError> {
         self.request("txpool_status", ()).await
+    }
+
+    async fn geth_debug_trace<T: Into<TypedTransaction> + Send + Sync>(
+        &self,
+        req: T,
+        block: Option<BlockNumber>,
+        trace: GethTracer,
+    ) -> Result<BlockTrace, ProviderError> {
+        let req = req.into();
+        let req = utils::serialize(&req);
+        let block = utils::serialize(&block.unwrap_or(BlockNumber::Latest));
+        let trace = utils::serialize(&trace);
+        self.request("debug_traceCall", [req, block, trace]).await
     }
 
     /// Executes the given call and returns a number of possible traces for it
